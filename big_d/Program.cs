@@ -2,7 +2,7 @@
 {
     public double mantissa;
     public int number;
-    public double difference;
+	public double difference;
 
     public big_d()
     {
@@ -42,19 +42,22 @@
         return num1;
     }
 
-    static void add(big_d num1, big_d num2)
+    static big_d add(big_d num1, big_d num2)
     {
-        if (num1 < mantissaAdd(num2, -32))
+		//public int difference;
+        if (big_d.compareLess(num1, mantissaAdd(num2, -32)))
             return num2;
-        else if (num2 < mantissaAdd(num1, -32))
+        else if (big_d.compareLess(num2, mantissaAdd(num1, -32)))
             return num1;
 
         //Absolute Value: Math.Abs(double);
-        difference = Math.Abs(num1.mantissa - num2.mantissa);
+        //difference = Math.Abs(num1.mantissa - num2.mantissa);
 
         if (compareGreater(num1, num2))
         {
             //add code here! :)
         }
+		
+		return num1;
     }
 }
