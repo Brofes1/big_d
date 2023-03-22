@@ -6,11 +6,36 @@ class big_d
     public int number;
     public static int difference;
 	public static double output;
+    public static big_d bigOutput = new big_d(0, 0); //nothing could possibly go wrong with this code
+    public static int bitShit = 0;
 
-    public big_d()
+    public big_d(int number, double mantissa)
     {
-        this.mantissa = 0;
-        this.number = 0;
+        try
+        {
+            bitShit = (int)Math.Floor(Math.Log2(number));
+        }
+        catch
+        {
+            bitShit = 0;
+        }
+        this.mantissa = mantissa;
+        this.number = number;
+        this.mantissa = bitShit + mantissa;
+        this.number = this.number << 29 - bitShit; //32 (Length of Int32), -2 (Safety bits), -1 (Closest pos)
+        //Console.WriteLine("{0}, {1}", this.number, this.mantissa);
+        Console.WriteLine(this.write());
+    }
+
+    string write(int decimals = 3)
+    {
+        if ((Math.Log(this.number / Math.Pow(2, 29 - this.mantissa)) - 1) <= decimals)
+        {
+            output = this.number / Math.Pow(2, 29 - this.mantissa);
+            return "" + output;
+        }
+        else 
+            return "die";
     }
 
     static bool compareGreater(big_d num1, big_d num2) // (1, 0)
@@ -47,7 +72,6 @@ class big_d
 
     static big_d add(big_d num1, big_d num2)
     {
-		//public int difference;
         if (big_d.compareLess(num1, mantissaAdd(num2, -32)))
             return num2;
         else if (big_d.compareLess(num2, mantissaAdd(num1, -32)))
@@ -74,5 +98,13 @@ class big_d
 			num1.mantissa += 1;
 			return num1;
 		}
+    }
+}
+
+class main
+{
+    public static void Main(string[] args)
+    {
+        big_d i = new big_d(7, 2);
     }
 }
