@@ -1,8 +1,11 @@
-﻿class big_d
+using System;
+
+class big_d
 {
     public double mantissa;
     public int number;
-	public double difference;
+    public static int difference;
+	public static double output;
 
     public big_d()
     {
@@ -51,13 +54,25 @@
             return num1;
 
         //Absolute Value: Math.Abs(double);
-        //difference = Math.Abs(num1.mantissa - num2.mantissa);
+        difference = (int)Math.Abs(num1.mantissa - num2.mantissa);
 
+		//Modifying mantissa is not needed due to lack of using it
         if (compareGreater(num1, num2))
         {
-            //add code here! :)
+            num2.number = num2.number >> difference;
+			num1.number += num2.number;
+			return num1;
         }
-		
-		return num1;
+		else if (compareLess(num1, num2))
+		{
+			num1.number = num1.number >> difference;
+			num2.number += num1.number;
+			return num2;
+		}
+		else
+		{
+			num1.mantissa += 1;
+			return num1;
+		}
     }
 }
