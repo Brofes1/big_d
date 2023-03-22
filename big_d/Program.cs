@@ -21,7 +21,7 @@
         else if (num1.number > num2.number)
             return true;
         
-        //what? how did you get here
+        //Equal values
         return false;
     }
 
