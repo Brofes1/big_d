@@ -6,7 +6,7 @@ class big_d
 {
     public double mantissa;
     public double exponent;
-    public static double bitShit = 0;
+    public static double bitCrap = 0;
     public static string output = "";
     public static double difference;
 
@@ -22,18 +22,23 @@ class big_d
     public string write(int decimals = 3) //Note: may need to be fixed due to double-digit numbers
     {
         output = "";
-        bitShit = Log10(2) * this.exponent;
-        output += Round(this.mantissa * Pow(10, bitShit % 1), decimals);
+        bitCrap = Log10(2) * this.exponent;
+        output += Round(this.mantissa * Pow(10, bitCrap % 1), decimals);
         output += "e";
         output += Floor(this.exponent * Log10(2));
         return output;
     }
 
+    public static big_d clone(big_d Obj)
+    {
+        return new big_d(Obj.mantissa, Obj.exponent);
+    }
+
     public static string write(big_d toWrite, int decimals = 3)
     {
         output = "";
-        bitShit = Log10(2) * toWrite.exponent;
-        output += Round(toWrite.mantissa * Pow(10, bitShit % 1), decimals);
+        bitCrap = Log10(2) * toWrite.exponent;
+        output += Round(toWrite.mantissa * Pow(10, bitCrap % 1), decimals);
         output += "e";
         output += Floor(toWrite.exponent * Log10(2));
         return output;
@@ -41,9 +46,9 @@ class big_d
 
     public big_d cleanup()
     {
-        bitShit = Floor(Log2(this.mantissa));
-        this.exponent += bitShit;
-        this.mantissa /= Pow(2, bitShit);
+        bitCrap = Floor(Log2(this.mantissa));
+        this.exponent += bitCrap;
+        this.mantissa /= Pow(2, bitCrap);
 		return this;
     }
 
@@ -67,45 +72,50 @@ class big_d
         return compareGreater(num2, num1);
     }
 
-    public static big_d exponentAdd(big_d num1, double add) //WARNING: WILL ESCAPE CODE AND AFFECT INPUTTED BIGD
+    public static big_d exponentAdd(big_d num1, double add)
     {
-        num1.exponent += add;
-        return num1;
+        big_d addE = clone(num1);
+        
+        addE.exponent += add;
+        return addE;
     }
 
     public static big_d mantissaAdd(big_d num1, int add)
     {
-        num1.mantissa += add;
-        return num1;
+        big_d addM = clone(num1);
+        
+        addM.mantissa += add;
+        return addM;
     }
 
     public static big_d add(big_d num1, big_d num2)
     {
-        //big_d asdf = num1;
-        //big_d fdsa = num2;
-        difference = Abs(num1.exponent - num2.exponent);
-        if (compareLess(num1, exponentAdd(num2, -32)))
+        big_d addNum1 = clone(num1);
+        big_d addNum2 = clone(num2);
+        
+        difference = Abs(addNum1.exponent - addNum2.exponent);
+        if (compareLess(addNum1, exponentAdd(addNum2, -32)))
         {
-            return num1;
-        } exponentAdd(num2, 32);
-        if (compareLess(num2, exponentAdd(num1, -32)))
+            return addNum1;
+        } exponentAdd(addNum2, 32);
+        if (compareLess(addNum2, exponentAdd(addNum1, -32)))
         {
-            return num2;
-        } exponentAdd(num1, 32);
-        if (compareGreater(num1, num2))
+            return addNum2;
+        } exponentAdd(addNum1, 32);
+        if (compareGreater(addNum1, addNum2))
         {
-            num2.mantissa /= Pow(2, difference);
-            num1.mantissa += num2.mantissa;
-            return num1.cleanup();
+            addNum2.mantissa /= Pow(2, difference);
+            addNum1.mantissa += addNum2.mantissa;
+            return addNum1.cleanup();
         }
-        else if (compareLess(num1, num2))
+        else if (compareLess(addNum1, addNum2))
         {
-            num1.mantissa /= Pow(2, difference);
-            num2.mantissa += num1.mantissa;
-            return num2.cleanup();
+            addNum1.mantissa /= Pow(2, difference);
+            addNum2.mantissa += addNum1.mantissa;
+            return addNum2.cleanup();
         }
         else
-            return exponentAdd(num1, 1);
+            return exponentAdd(addNum1, 1);
     }
 }
 
