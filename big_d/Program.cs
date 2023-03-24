@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using static System.Math;
 
 class big_d
@@ -16,7 +17,6 @@ class big_d
 
         this.exponent += Floor(Log2(mantissa));
         this.mantissa /= Pow(2, this.exponent - exponent);
-        Console.WriteLine(this.write());
     }
 
     public string write(int decimals = 3) //Note: may need to be fixed due to double-digit numbers
@@ -67,7 +67,7 @@ class big_d
         return compareGreater(num2, num1);
     }
 
-    public static big_d exponentAdd(big_d num1, double add)
+    public static big_d exponentAdd(big_d num1, double add) //WARNING: WILL ESCAPE CODE AND AFFECT INPUTTED BIGD
     {
         num1.exponent += add;
         return num1;
@@ -81,12 +81,18 @@ class big_d
 
     public static big_d add(big_d num1, big_d num2)
     {
+        //big_d asdf = num1;
+        //big_d fdsa = num2;
         difference = Abs(num1.exponent - num2.exponent);
         if (compareLess(num1, exponentAdd(num2, -32)))
+        {
             return num1;
-        else if (compareLess(num2, exponentAdd(num1, -32)))
+        } exponentAdd(num2, 32);
+        if (compareLess(num2, exponentAdd(num1, -32)))
+        {
             return num2;
-        else if (compareGreater(num1, num2))
+        } exponentAdd(num1, 32);
+        if (compareGreater(num1, num2))
         {
             num2.mantissa /= Pow(2, difference);
             num1.mantissa += num2.mantissa;
@@ -99,7 +105,7 @@ class big_d
             return num2.cleanup();
         }
         else
-            return mantissaAdd(num1, 1);
+            return exponentAdd(num1, 1);
     }
 }
 
@@ -109,6 +115,9 @@ class main
     {
         big_d i = new big_d(1, 1024);
 		big_d j = new big_d(1, 1024);
-		Console.WriteLine(big_d.write(big_d.add(i ,j)));
+        big_d k = new big_d(1, 0);
+        k = big_d.add(i, j);
+        Console.WriteLine(i.write());
+        Console.WriteLine(k.write());
     }
 }
