@@ -10,7 +10,7 @@ class big_d
     public static string output = "";
     public static double difference;
 
-    public big_d(double mantissa, double exponent)
+    public big_d(double mantissa = 0, double exponent = 0)
     {
         this.mantissa = mantissa;
         this.exponent = exponent;
@@ -29,11 +29,6 @@ class big_d
         return output;
     }
 
-    public static big_d clone(big_d Obj)
-    {
-        return new big_d(Obj.mantissa, Obj.exponent);
-    }
-
     public static string write(big_d toWrite, int decimals = 3)
     {
         output = "";
@@ -42,6 +37,11 @@ class big_d
         output += "e";
         output += Floor(toWrite.exponent * Log10(2));
         return output;
+    }
+
+    public static big_d clone(big_d Obj)
+    {
+        return new big_d(Obj.mantissa, Obj.exponent);
     }
 
     public big_d cleanup()
@@ -117,17 +117,36 @@ class big_d
         else
             return exponentAdd(addNum1, 1);
     }
+
+    public static big_d multiply(big_d num1, big_d num2)
+    {
+        big_d multiplyNum1 = clone(num1);
+        big_d multiplyNum2 = clone(num2);
+
+        multiplyNum1.mantissa *= multiplyNum2.mantissa;
+        multiplyNum1.exponent += multiplyNum2.exponent;
+        multiplyNum1.cleanup();
+
+        return multiplyNum1;
+    }
 }
 
 class main
 { 
     public static void Main(string[] args)
     {
-        big_d i = new big_d(1, 1024);
-		big_d j = new big_d(1, 1024);
-        big_d k = new big_d(1, 0);
+        big_d i = new big_d(1, 2);
+		big_d j = new big_d(-1, 4);
+        big_d k = new big_d();
+        big_d l = new big_d();
+        big_d m = new big_d();
         k = big_d.add(i, j);
+        l = big_d.multiply(i, j);
         Console.WriteLine(i.write());
+        Console.WriteLine(j.write());
         Console.WriteLine(k.write());
+        Console.WriteLine(l.write());
+        Console.WriteLine(m.write());
+        Console.WriteLine(big_d.add(i, m));
     }
 }
