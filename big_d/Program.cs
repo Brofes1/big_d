@@ -50,7 +50,7 @@ class big_d
         return mLogB(mantissa, 10);
     }
 
-    public string write(int decimals = 3) //Note: may need to be fixed due to double-digit numbers
+    public string write(int decimals = 3)
     {
         output = "";
         bitCrap = Log10(2) * this.exponent;
