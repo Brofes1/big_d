@@ -1,31 +1,64 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using static System.Math;
 
 class big_d
 {
+    private static byte sign;
+    private static double bitCrap = 0;
+    private static string output = "";
+    private static double difference;
+    private static int shift;
+
     public double mantissa;
     public double exponent;
-    public static double bitCrap = 0;
-    public static string output = "";
-    public static double difference;
 
-    public big_d(double mantissa = 0, double exponent = 0)
+    public big_d(double mantissa = 0, double exponent = 0, int baseNum = 2) //Basenum will be used for adding the ability to do b10 and other bases
     {
         this.mantissa = mantissa;
         this.exponent = exponent;
 
-        this.exponent += Floor(Log2(mantissa));
-        this.mantissa /= Pow(2, this.exponent - exponent);
+        if (mantissa != 0)
+        {
+            this.exponent += Floor(Log2(Abs(mantissa)));
+            this.mantissa /= Pow(2, this.exponent - exponent);
+        }
+        else
+            this.exponent = 0;
+    }
+
+    private static double mLogB(double mantissa, byte baseNum)
+    {
+        sign = (byte)(mantissa / Abs(mantissa));
+
+        if (mantissa == 0)
+            return 0;
+        if (sign == 255)
+            return (Log(Abs(mantissa)) / Log(baseNum)) * -1;
+        else
+            return (Log(Abs(mantissa)) / Log(baseNum));
+    }
+
+    private static double mLog2(double mantissa)
+    {
+        return mLogB(mantissa, 2);
+    }
+
+    private static double mLog10(double mantissa)
+    {
+        return mLogB(mantissa, 10);
     }
 
     public string write(int decimals = 3) //Note: may need to be fixed due to double-digit numbers
     {
         output = "";
         bitCrap = Log10(2) * this.exponent;
-        output += Round(this.mantissa * Pow(10, bitCrap % 1), decimals);
+        shift = (int)Round(mLog10(this.mantissa * Pow(10, bitCrap % 1)), decimals);
+        Console.WriteLine("shift: " + shift);
+        output += Round(this.mantissa * Pow(10, bitCrap % 1) / Pow(10, shift * -1), decimals);
         output += "e";
-        output += Floor(this.exponent * Log10(2));
+        output += Floor(this.exponent * Log10(2) + (shift * -1));
         return output;
     }
 
@@ -33,9 +66,11 @@ class big_d
     {
         output = "";
         bitCrap = Log10(2) * toWrite.exponent;
-        output += Round(toWrite.mantissa * Pow(10, bitCrap % 1), decimals);
+        shift = (int)Round(mLog10(toWrite.mantissa * Pow(10, bitCrap % 1)), decimals);
+        Console.WriteLine("shift: " + shift);
+        output += Round(toWrite.mantissa * Pow(10, bitCrap % 1) / Pow(10, shift * -1), decimals);
         output += "e";
-        output += Floor(toWrite.exponent * Log10(2));
+        output += Floor(toWrite.exponent * Log10(2) + (shift * -1));
         return output;
     }
 
@@ -46,9 +81,10 @@ class big_d
 
     public big_d cleanup()
     {
-        bitCrap = Floor(Log2(this.mantissa));
+        bitCrap = Floor(Log2(Abs(this.mantissa)));
         this.exponent += bitCrap;
         this.mantissa /= Pow(2, bitCrap);
+
 		return this;
     }
 
@@ -97,18 +133,18 @@ class big_d
         if (compareLess(addNum1, exponentAdd(addNum2, -32)))
         {
             return addNum1;
-        } exponentAdd(addNum2, 32);
+        }
         if (compareLess(addNum2, exponentAdd(addNum1, -32)))
         {
             return addNum2;
-        } exponentAdd(addNum1, 32);
+        }
         if (compareGreater(addNum1, addNum2))
         {
             addNum2.mantissa /= Pow(2, difference);
             addNum1.mantissa += addNum2.mantissa;
             return addNum1.cleanup();
         }
-        else if (compareLess(addNum1, addNum2))
+        if (compareLess(addNum1, addNum2))
         {
             addNum1.mantissa /= Pow(2, difference);
             addNum2.mantissa += addNum1.mantissa;
@@ -129,6 +165,15 @@ class big_d
 
         return multiplyNum1;
     }
+
+    public static big_d pow(big_d num1, double power)
+    {
+        big_d powNum1 = clone(num1);
+
+        powNum1.mantissa = Pow(powNum1.mantissa, power);
+        powNum1.exponent *= power;
+        return powNum1.cleanup();
+    }
 }
 
 class main
@@ -147,6 +192,5 @@ class main
         Console.WriteLine(k.write());
         Console.WriteLine(l.write());
         Console.WriteLine(m.write());
-        Console.WriteLine(big_d.add(i, m));
     }
 }
