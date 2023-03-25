@@ -22,7 +22,7 @@ class big_d
         if (mantissa != 0)
         {
             this.exponent += Floor(Log2(Abs(mantissa)));
-            this.mantissa /= Pow(2, this.exponent - exponent);
+            this.mantissa /= Math.Pow(2, this.exponent - exponent);
         }
         else
             this.exponent = 0;
@@ -50,30 +50,6 @@ class big_d
         return mLogB(mantissa, 10);
     }
 
-    public string write(int decimals = 3)
-    {
-        output = "";
-        bitCrap = Log10(2) * this.exponent;
-        shift = (int)Round(mLog10(this.mantissa * Pow(10, bitCrap % 1)), decimals);
-        Console.WriteLine("shift: " + shift);
-        output += Round(this.mantissa * Pow(10, bitCrap % 1) / Pow(10, shift * -1), decimals);
-        output += "e";
-        output += Floor(this.exponent * Log10(2) + (shift * -1));
-        return output;
-    }
-
-    public static string write(big_d toWrite, int decimals = 3)
-    {
-        output = "";
-        bitCrap = Log10(2) * toWrite.exponent;
-        shift = (int)Round(mLog10(toWrite.mantissa * Pow(10, bitCrap % 1)), decimals);
-        Console.WriteLine("shift: " + shift);
-        output += Round(toWrite.mantissa * Pow(10, bitCrap % 1) / Pow(10, shift * -1), decimals);
-        output += "e";
-        output += Floor(toWrite.exponent * Log10(2) + (shift * -1));
-        return output;
-    }
-
     public static big_d clone(big_d Obj)
     {
         return new big_d(Obj.mantissa, Obj.exponent);
@@ -83,7 +59,7 @@ class big_d
     {
         bitCrap = Floor(Log2(Abs(this.mantissa)));
         this.exponent += bitCrap;
-        this.mantissa /= Pow(2, bitCrap);
+        this.mantissa /= Math.Pow(2, bitCrap);
 
 		return this;
     }
@@ -124,11 +100,11 @@ class big_d
         return addM;
     }
 
-    public static big_d add(big_d num1, big_d num2)
+    public static big_d operator +(big_d num1, big_d num2)
     {
         big_d addNum1 = clone(num1);
         big_d addNum2 = clone(num2);
-        
+
         difference = Abs(addNum1.exponent - addNum2.exponent);
         if (compareLess(addNum1, exponentAdd(addNum2, -32)))
         {
@@ -140,13 +116,13 @@ class big_d
         }
         if (compareGreater(addNum1, addNum2))
         {
-            addNum2.mantissa /= Pow(2, difference);
+            addNum2.mantissa /= Math.Pow(2, difference);
             addNum1.mantissa += addNum2.mantissa;
             return addNum1.cleanup();
         }
         if (compareLess(addNum1, addNum2))
         {
-            addNum1.mantissa /= Pow(2, difference);
+            addNum1.mantissa /= Math.Pow(2, difference);
             addNum2.mantissa += addNum1.mantissa;
             return addNum2.cleanup();
         }
@@ -154,7 +130,7 @@ class big_d
             return exponentAdd(addNum1, 1);
     }
 
-    public static big_d multiply(big_d num1, big_d num2)
+    public static big_d operator *(big_d num1, big_d num2)
     {
         big_d multiplyNum1 = clone(num1);
         big_d multiplyNum2 = clone(num2);
@@ -166,13 +142,38 @@ class big_d
         return multiplyNum1;
     }
 
-    public static big_d pow(big_d num1, double power)
+    public static big_d operator *(big_d num1, int num2)
+    {
+        big_d multiplyNum1 = clone(num1);
+
+        multiplyNum1.mantissa *= num2;
+        multiplyNum1.cleanup();
+
+        return multiplyNum1;
+    }
+
+    public static big_d operator -(big_d num1, big_d num2) => num1 + (num2 * -1);
+
+    public static big_d Pow(big_d num1, double power)
     {
         big_d powNum1 = clone(num1);
 
-        powNum1.mantissa = Pow(powNum1.mantissa, power);
+        powNum1.mantissa = Math.Pow(powNum1.mantissa, power);
         powNum1.exponent *= power;
         return powNum1.cleanup();
+    }
+
+    public static big_d operator /(big_d num1, big_d num2) => num1 * Pow(num2, -1);
+
+    public override string ToString()
+    {
+        output = "";
+        bitCrap = Log10(2) * this.exponent;
+        shift = (int)Round(mLog10(this.mantissa * Math.Pow(10, bitCrap % 1)), 9);
+        output += Round(this.mantissa * Math.Pow(10, bitCrap % 1) / Math.Pow(10, shift * -1), 9);
+        output += "e";
+        output += Floor(this.exponent * Log10(2) + (shift * -1));
+        return output;
     }
 }
 
@@ -182,15 +183,13 @@ class main
     {
         big_d i = new big_d(1, 2);
 		big_d j = new big_d(-1, 4);
-        big_d k = new big_d();
-        big_d l = new big_d();
         big_d m = new big_d();
-        k = big_d.add(i, j);
-        l = big_d.multiply(i, j);
-        Console.WriteLine(i.write());
-        Console.WriteLine(j.write());
-        Console.WriteLine(k.write());
-        Console.WriteLine(l.write());
-        Console.WriteLine(m.write());
+        Console.WriteLine(i);
+        Console.WriteLine(j);
+        Console.WriteLine(i + j);
+        Console.WriteLine(i * j);
+        Console.WriteLine(m);
+        Console.WriteLine(big_d.Pow(i, 5));
+        Console.WriteLine(i / new big_d(1, 2));
     }
 }
