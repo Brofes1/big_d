@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using static System.Math;
 
 class big_d
@@ -14,10 +11,17 @@ class big_d
     public double mantissa;
     public double exponent;
 
-    public big_d(double mantissa = 0, double exponent = 0, int baseNum = 2) //Basenum will be used for adding the ability to do b10 and other bases
+    public big_d(double mantissa = 0, double exponent = 0, int baseNum = 10) //Basenum will be used for adding the ability to do b10 and other bases
     {
         this.mantissa = mantissa;
-        this.exponent = exponent;
+        this.exponent = exponent * Floor(Log2(baseNum));
+        this.mantissa *= Log2(baseNum) / Floor(Log2(baseNum));
+
+        if (baseNum != 2)
+        {
+            Console.WriteLine("m    " + this.mantissa);
+            Console.WriteLine("e    " + this.exponent);
+        }
 
         if (mantissa != 0)
         {
@@ -26,6 +30,8 @@ class big_d
         }
         else
             this.exponent = 0;
+
+        this.cleanup();
     }
 
     private static double mLogB(double mantissa, byte baseNum)
@@ -52,14 +58,17 @@ class big_d
 
     public static big_d clone(big_d Obj)
     {
-        return new big_d(Obj.mantissa, Obj.exponent);
+        return new big_d(Obj.mantissa, Obj.exponent, 2);
     }
 
     public big_d cleanup()
     {
-        bitCrap = Floor(Log2(Abs(this.mantissa)));
-        this.exponent += bitCrap;
-        this.mantissa /= Math.Pow(2, bitCrap);
+        if (this.mantissa != 0)
+        {
+            bitCrap = Floor(Log2(Abs(this.mantissa)));
+            this.exponent += bitCrap;
+            this.mantissa /= Math.Pow(2, bitCrap);
+        }
 
 		return this;
     }
@@ -181,8 +190,8 @@ class main
 { 
     public static void Main(string[] args)
     {
-        big_d i = new big_d(1, 2);
-		big_d j = new big_d(-1, 4);
+        big_d i = new big_d(1, 2, 2);
+		big_d j = new big_d(-1, 4, 2);
         big_d m = new big_d();
         Console.WriteLine(i);
         Console.WriteLine(j);
@@ -190,6 +199,13 @@ class main
         Console.WriteLine(i * j);
         Console.WriteLine(m);
         Console.WriteLine(big_d.Pow(i, 5));
-        Console.WriteLine(i / new big_d(1, 2));
+        Console.WriteLine(i / new big_d(1, 2, 2));
+
+        big_d x = new big_d(1, 2);
+        big_d y = new big_d(1, 1);
+        Console.WriteLine("\n" + x);
+        Console.WriteLine(y);
+        Console.WriteLine(x + y);
+        Console.WriteLine("\n" + (new big_d(-1, 2, 2) / new big_d(1, 1, 2)));
     }
 }
